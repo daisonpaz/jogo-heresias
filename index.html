@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qual é a sua heresia?</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Alegreya+Sans:wght@400;700&display=swap">
+<style>
+  /* ===== ESTILO (CSS) ===== */
+  /* As cores ficam em variáveis: mude aqui e o jogo inteiro muda. */
+  :root {
+    --fundo: #1a1f3d;
+    --papel: #252b52;
+    --texto: #f2eee4;
+    --ouro: #e0b84c;
+    --fogo: #d2552f;
+    --suave: #9aa0c4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: "Alegreya Sans", Georgia, sans-serif;
+    font-size: 18px;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+  }
+  main { width: 100%; max-width: 560px; padding: 28px 20px 48px; }
+  h1, h2, h3, .pergunta {
+    font-family: "IM Fell English", Georgia, serif;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+  h1 { font-size: 2.2rem; margin: 40px 0 12px; }
+  h2 { font-size: 1.8rem; margin: 0 0 12px; }
+  .pergunta { font-size: 1.7rem; margin: 28px 0 32px; }
+  .barra { height: 4px; background: var(--papel); border-radius: 2px; }
+  .barra > div { height: 100%; background: var(--ouro); border-radius: 2px; transition: width .3s; }
+  .contador { color: var(--suave); font-size: .95rem; margin-top: 8px; }
+  .botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  button {
+    font: inherit; font-weight: 700; font-size: 1.2rem;
+    padding: 16px; border-radius: 10px; cursor: pointer;
+    border: 2px solid var(--ouro); color: var(--ouro); background: transparent;
+  }
+  button.cheio { background: var(--ouro); color: var(--fundo); }
+  button:focus-visible { outline: 3px solid var(--texto); outline-offset: 2px; }
+  .oculto { display: none; }
+  .mensagem { font-size: 1.15rem; background: var(--papel); padding: 16px; border-radius: 10px; margin-bottom: 24px; }
+  .linha { margin: 14px 0; }
+  .linha .nome { display: flex; justify-content: space-between; }
+  .linha .nivel { height: 8px; background: var(--papel); border-radius: 4px; margin-top: 4px; }
+  .linha .nivel > div { height: 100%; background: var(--fogo); border-radius: 4px; }
+  details { background: var(--papel); border-radius: 10px; padding: 12px 16px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; }
+  details p { margin: 10px 0 0; }
+  .aviso { color: var(--suave); font-size: .9rem; margin-top: 32px; }
+</style>
+</head>
+<body>
+<main>
+
+  <!-- ===== ESTRUTURA (HTML) ===== -->
+  <!-- Três "telas". O JavaScript mostra uma e esconde as outras. -->
+
+  <section id="tela-inicio">
+    <h1>Qual é a sua heresia?</h1>
+    <p>Catorze perguntas, só “sim” ou “não”. No final, descubra em qual erro da história da Igreja você teria caído, e por que ele está errado.</p>
+    <button class="cheio" id="btn-comecar" style="width:100%">Começar</button>
+  </section>
+
+  <section id="tela-jogo" class="oculto">
+    <div class="barra"><div id="progresso"></div></div>
+    <div class="contador" id="contador"></div>
+    <p class="pergunta" id="texto-pergunta"></p>
+    <div class="botoes">
+      <button class="cheio" id="btn-sim">Sim</button>
+      <button id="btn-nao">Não</button>
+    </div>
+  </section>
+
+  <section id="tela-resultado" class="oculto">
+    <h2 id="titulo-resultado"></h2>
+    <p class="mensagem" id="mensagem-resultado"></p>
+    <div id="placar"></div>
+    <h3>Para aprofundar</h3>
+    <div id="aprofundar"></div>
+    <button class="cheio" id="btn-reiniciar" style="width:100%; margin-top:24px">Jogar de novo</button>
+    <p class="aviso">É só um jogo: ninguém merece fogueira por errar uma pergunta de teologia.</p>
+  </section>
+
+</main>
+
+<script>
+/* ===== DADOS ===== */
+/* Aqui mora o conteúdo do jogo. Para criar perguntas ou heresias novas,
+   você mexe só nesta parte, sem tocar na lógica lá embaixo. */
+
+// Cada heresia tem um nome e um texto de aprofundamento.
+const heresias = {
+  arianismo: {
+    nome: `Arianismo`,
+    texto: `Surgiu no século IV com Ário, presbítero de Alexandria, que ensinava que o Filho era uma criatura, a primeira e mais perfeita, e que “houve um tempo em que ele não era”. O Concílio de Niceia (325) respondeu com a palavra “consubstancial”: o Filho é da mesma substância do Pai. Biblicamente, o erro cai diante de João 1,1 (“o Verbo era Deus”), João 8,58 (“antes que Abraão existisse, Eu Sou”) e João 10,30 (“Eu e o Pai somos um”). O Concílio de Constantinopla (381) confirmou a fé nicena.`
+  },
+  docetismo: {
+    nome: `Docetismo`,
+    texto: `Do grego “dokein”, parecer. Nos séculos I e II, correntes ligadas ao gnosticismo diziam que a matéria é má e que, por isso, o corpo de Cristo e a sua paixão foram só aparência. Santo Inácio de Antioquia o combateu com força. Biblicamente: 1 João 4,2-3 manda reconhecer que Jesus Cristo veio “em carne”; João 1,14 diz que “o Verbo se fez carne”; em Lucas 24,39 o Ressuscitado mostra que tem carne e ossos. Além disso, Gênesis 1,31 afirma que a criação material é “muito boa”.`
+  },
+  pelagianismo: {
+    nome: `Pelagianismo`,
+    texto: `Pelágio, monge do início do século V, defendia que o pecado de Adão só deu mau exemplo e que a vontade humana basta para começar e levar adiante a vida de fé. Santo Agostinho foi seu grande opositor, e os concílios de Cartago (418) e de Éfeso (431) o condenaram. Biblicamente: Romanos 5,12 liga a morte e o pecado a Adão; João 15,5 diz “sem mim nada podeis fazer”; Filipenses 2,13 afirma que é Deus quem opera em nós o querer e o fazer; Efésios 2,8 fala da salvação como dom.`
+  },
+  iconoclastia: {
+    nome: `Iconoclastia`,
+    texto: `Surgiu no Império Bizantino no século VIII, a partir do edito de Leão III (726), que mandava destruir imagens sacras como se todas fossem idolatria. O Segundo Concílio de Niceia (787), apoiado em São João Damasceno, distinguiu adoração (devida só a Deus) de veneração (honra que passa da imagem para quem ela representa). Biblicamente: o próprio Deus mandou fazer querubins para a Arca (Êxodo 25,18-20) e a serpente de bronze (Números 21,8-9); o Templo de Salomão tinha imagens (1 Reis 6). E, como Deus se fez visível em Cristo, “imagem do Deus invisível” (Colossenses 1,15), representá-lo faz sentido. A proibição de Êxodo 20,4 visa imagens feitas para serem adoradas.`
+  },
+  nestorianismo: {
+    nome: `Nestorianismo`,
+    texto: `Nestório, patriarca de Constantinopla no início do século V, recusava chamar Maria de “Theotokos” (Mãe de Deus), dizendo que ela era mãe só do homem Jesus. Na prática, isso separava Cristo em duas pessoas, uma divina e outra humana. (Há debate entre historiadores sobre o que o próprio Nestório realmente ensinava; o nome “nestorianismo” designa a doutrina condenada.) São Cirilo de Alexandria reagiu, e o Concílio de Éfeso (431) proclamou que Cristo é uma só pessoa e que Maria é Mãe de Deus. Atenção ao sentido: não se diz que Maria gerou a divindade, mas que a pessoa que ela gerou é Deus. Biblicamente: Isabel chama Maria de “mãe do meu Senhor” (Lucas 1,43); Gálatas 4,4 diz que Deus enviou o seu Filho, “nascido de mulher”; e 1 Coríntios 2,8 fala em crucificar o “Senhor da glória”. Em 1994, uma declaração cristológica comum entre a Igreja Católica e a Igreja Assíria do Oriente reconheceu a fé compartilhada sobre Cristo.`
+  },
+  monofisismo: {
+    nome: `Monofisismo`,
+    texto: `Êutiques, monge de Constantinopla, ensinava que a humanidade de Cristo foi absorvida pela divindade, restando nele uma só natureza. O Concílio de Calcedônia (451), com o Tomo do papa São Leão Magno, definiu que Cristo é uma só pessoa em duas naturezas, divina e humana, “sem confusão, sem mudança, sem divisão, sem separação”. A recusa de Calcedônia dividiu cristãos orientais por séculos; hoje, o diálogo com várias dessas Igrejas mostra que parte da diferença é de vocabulário. Biblicamente: Filipenses 2,6-8 fala da “forma de Deus” e da “forma de servo”; Hebreus 4,15 diz que Cristo foi tentado em tudo como nós; Lucas 2,52 diz que ele crescia em sabedoria; e em Mateus 26,39 a vontade humana de Jesus se submete à do Pai.`
+  },
+  modalismo: {
+    nome: `Modalismo`,
+    texto: `Também chamado sabelianismo (de Sabélio, século III). Ensinava que Pai, Filho e Espírito Santo são uma só pessoa que aparece em três “modos” ou “máscaras”, conforme a época. Uma versão antiga, o patripassianismo, chegava a dizer que o Pai sofreu na cruz. Tertuliano o combateu em “Contra Práxeas”, formulando “uma só substância, três pessoas”. Biblicamente: no batismo de Jesus (Mateus 3,16-17) o Filho está na água, o Espírito desce e o Pai fala, tudo ao mesmo tempo; em João 14,16 Jesus diz que rogará ao Pai, que dará “outro Paráclito”; em João 17 Jesus reza ao Pai; e Mateus 28,19 manda batizar em nome do Pai, do Filho e do Espírito Santo.`
+  }
+};
+
+// Cada pergunta diz quantos pontos a resposta "sim" e a resposta "não"
+// dão a cada heresia. Vazio ({}) significa que a resposta é ortodoxa.
+const perguntas = [
+  {
+    texto: `Jesus foi a mais elevada de todas as criaturas, mas não é Deus no mesmo sentido que o Pai.`,
+    sim: { arianismo: 2 }, nao: {}
+  },
+  {
+    texto: `Jesus teve um corpo real e sofreu de verdade na cruz.`,
+    sim: {}, nao: { docetismo: 2 }
+  },
+  {
+    texto: `O pecado de Adão não deixou herança nenhuma nos seus descendentes.`,
+    sim: { pelagianismo: 2 }, nao: {}
+  },
+  {
+    texto: `Imagens sacras dentro de um templo são sempre idolatria.`,
+    sim: { iconoclastia: 2 }, nao: {}
+  },
+  {
+    texto: `O Filho é da mesma substância do Pai.`,
+    sim: {}, nao: { arianismo: 2 }
+  },
+  {
+    texto: `Como a matéria é má por natureza, Deus jamais poderia ter se feito carne.`,
+    sim: { docetismo: 2 }, nao: {}
+  },
+  {
+    texto: `Sem a graça de Deus, o ser humano não consegue sequer dar o primeiro passo na fé.`,
+    sim: {}, nao: { pelagianismo: 2 }
+  },
+  {
+    texto: `Como o Verbo se fez carne visível em Cristo, é legítimo representá-lo em imagens.`,
+    sim: {}, nao: { iconoclastia: 2 }
+  },
+
+  // ----- Bloco de cristologia (nestorianismo, monofisismo, modalismo) -----
+  {
+    texto: `Maria é mãe apenas do homem Jesus, e por isso não deve ser chamada de Mãe de Deus.`,
+    sim: { nestorianismo: 2 }, nao: {}
+  },
+  {
+    texto: `Cristo é verdadeiro Deus e verdadeiro homem, com duas naturezas distintas e completas.`,
+    sim: {}, nao: { monofisismo: 2 }
+  },
+  {
+    texto: `Quando Jesus rezava ao Pai, Deus apenas conversava consigo mesmo, pois Pai e Filho são a mesma pessoa.`,
+    sim: { modalismo: 2 }, nao: {}
+  },
+  {
+    texto: `Em Cristo há uma só pessoa, a do Filho de Deus, que nasceu de Maria.`,
+    sim: {}, nao: { nestorianismo: 2 }
+  },
+  {
+    texto: `A natureza humana de Cristo se dissolveu na divina, como uma gota de água no oceano.`,
+    sim: { monofisismo: 2 }, nao: {}
+  },
+  {
+    texto: `Pai, Filho e Espírito Santo são três pessoas distintas, mas um só Deus.`,
+    sim: {}, nao: { modalismo: 2 }
+  }
+];
+
+// Mensagens finais, conforme quantas heresias a pessoa acumulou.
+const mensagens = {
+  0: { titulo: `Doutor da Igreja?`, texto: `Olha! Será que estamos diante do mais novo venerável Doutor da Santa Igreja?!` },
+  1: { titulo: `Perigo à vista`, texto: `Hmmmm… tomara que você não tenha muitos seguidores no Instagram, ou teremos uma nova seita!` },
+  2: { titulo: `Fundador de igreja`, texto: `Muito bem, seu currículo preenche todos os requisitos. Alugue uma sala, compre um jogo de cadeiras de plástico, inaugure a sua igreja e aproveite a renúncia fiscal.` },
+  3: { titulo: `Caminho da fogueira`, texto: `Parabéns! Continue assim e seu caminho para a santa fogueira está assegurado. (Que fique claro: ninguém defende matar ninguém por crença equivocada, é só um jogo.)` }
+};
+
+/* ===== LÓGICA ===== */
+/* "Estado" é tudo que muda durante o jogo. */
+let indice = 0;      // em que pergunta estamos
+let pontos = {};     // ex.: { arianismo: 2, docetismo: 0 }
+
+// Atalho para pegar um elemento da página pelo id.
+const $ = (id) => document.getElementById(id);
+
+// Mostra uma tela e esconde as outras.
+function mostrarTela(id) {
+  for (const t of ['tela-inicio', 'tela-jogo', 'tela-resultado']) {
+    $(t).classList.toggle('oculto', t !== id);
+  }
+}
+
+function comecar() {
+  indice = 0;
+  pontos = {};
+  for (const chave in heresias) pontos[chave] = 0;  // zera o placar
+  mostrarTela('tela-jogo');
+  mostrarPergunta();
+}
+
+function mostrarPergunta() {
+  const p = perguntas[indice];
+  $('texto-pergunta').textContent = p.texto;
+  $('contador').textContent = `Pergunta ${indice + 1} de ${perguntas.length}`;
+  $('progresso').style.width = `${(indice / perguntas.length) * 100}%`;
+}
+
+// Chamada quando o jogador clica em Sim ou Não.
+function responder(resposta) {
+  const efeito = perguntas[indice][resposta];  // ex.: { arianismo: 2 }
+  for (const chave in efeito) pontos[chave] += efeito[chave];
+
+  indice++;
+  if (indice < perguntas.length) mostrarPergunta();
+  else mostrarResultado();
+}
+
+function mostrarResultado() {
+  // Heresias com pelo menos 2 pontos contam como "enquadradas".
+  const enquadradas = Object.keys(pontos).filter((k) => pontos[k] >= 2);
+
+  // Escolhe a mensagem (3 ou mais usa a mensagem 3).
+  const msg = mensagens[Math.min(enquadradas.length, 3)];
+  $('titulo-resultado').textContent = msg.titulo;
+  $('mensagem-resultado').textContent = msg.texto;
+
+  // Placar: uma barra para cada heresia.
+  $('placar').innerHTML = Object.keys(heresias).map((k) => `
+    <div class="linha">
+      <div class="nome"><span>${heresias[k].nome}</span><span>${pontos[k]} de 4</span></div>
+      <div class="nivel"><div style="width:${(pontos[k] / 4) * 100}%"></div></div>
+    </div>`).join('');
+
+  // Textos de aprofundamento só para as heresias em que a pessoa foi enquadrada.
+  $('aprofundar').innerHTML = enquadradas.length === 0
+    ? `<p>Nenhuma heresia para estudar desta vez. Que tal jogar de novo e responder o contrário?</p>`
+    : enquadradas.map((k) => `
+        <details>
+          <summary>${heresias[k].nome}</summary>
+          <p>${heresias[k].texto}</p>
+        </details>`).join('');
+
+  $('progresso').style.width = '100%';
+  mostrarTela('tela-resultado');
+}
+
+/* Liga os botões às funções. */
+$('btn-comecar').addEventListener('click', comecar);
+$('btn-sim').addEventListener('click', () => responder('sim'));
+$('btn-nao').addEventListener('click', () => responder('nao'));
+$('btn-reiniciar').addEventListener('click', comecar);
+</script>
+</body>
+</html>
