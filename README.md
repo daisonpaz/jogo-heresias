@@ -2,13 +2,13 @@
 
 > Um quiz de sim ou não sobre heresias e doutrina católica, com humor e material de estudo.
 
-O jogador responde a perguntas com apenas duas opções, **sim** ou **não**. Conforme as respostas, pode ser "enquadrado" em uma ou mais heresias da história da Igreja. No final, o jogo mostra uma mensagem bem-humorada, um placar e textos de aprofundamento (origem histórica do erro e razão bíblica pela qual ele está errado) sobre cada heresia em que a pessoa caiu.
+O jogador responde a perguntas com apenas duas opções, **sim** ou **não**. Conforme as respostas, pode ser "enquadrado" em uma ou mais heresias da história da Igreja. No final, o jogo mostra uma mensagem bem-humorada, um placar e textos de aprofundamento (origem histórica do erro e razões doutrinárias e bíblicas que o explicam) sobre cada heresia em que a pessoa caiu.
 
-O projeto também é um **exercício de aprendizado de programação**: o código é simples, comentado e organizado para ser lido por quem está começando.
+O projeto também é um **exercício para o aprendizado de programação**: o código é simples, comentado e organizado para ser lido por quem está começando.
 
 ## Como jogar
 
-- **Online:** [https://daisonpaz.github.io/jogo-heresias](https://daisonpaz.github.io/jogo-heresias/))
+- **Online:** [https://daisonpaz.github.io/jogo-heresias](https://daisonpaz.github.io/jogo-heresias/)
 - **No seu computador ou celular:** baixe este repositório e abra o arquivo `index.html` no navegador. Não é preciso instalar nada.
 
 ## O que o jogo tem hoje
@@ -16,9 +16,9 @@ O projeto também é um **exercício de aprendizado de programação**: o códig
 - 14 perguntas de sim ou não
 - 7 heresias: Arianismo, Docetismo, Pelagianismo, Iconoclastia, Nestorianismo, Monofisismo e Modalismo
 - Mensagens finais que variam conforme o número de heresias acumuladas
-- Painéis "Para aprofundar" com contexto histórico e base bíblica
+- Painéis "Para aprofundar" com contexto histórico, doutrinário e base bíblica
 
-Como cada resposta soma pontos, o resultado pode apontar nenhuma heresia, uma ou várias. As respostas ortodoxas ficam misturadas entre "sim" e "não" de propósito, para que responder sempre a mesma coisa não leve a lugar nenhum.
+Como cada resposta soma pontos, o resultado pode apontar nenhuma heresia, uma ou várias. As respostas ortodoxas ficam misturadas entre "sim" e "não" de propósito, para quem responder sempre a mesma opção não leve a lugar nenhum.
 
 ## Como adicionar conteúdo
 
@@ -64,7 +64,12 @@ A história do projeto, o histórico de versões e as decisões de arquitetura e
 
 - Este é um projeto **independente e didático**, sem vínculo oficial com a Igreja Católica nem com qualquer instituição.
 - O humor visa **ideias**, não pessoas. É só um jogo: ninguém merece fogueira por errar uma pergunta de teologia.
-- Os textos de aprofundamento foram redigidos com base em conhecimento geral e devem ser conferidos nas fontes (Catecismo da Igreja Católica e atas dos concílios) antes de qualquer uso mais sério.
+- Os textos de aprofundamento foram redigidos com base em conhecimento geral e devem ser conferidos nas fontes ([Catecismo da Igreja Católica, Direito Canônico e atas dos concílios](https://www.vatican.va/archive/index_po.htm)) antes de qualquer uso mais sério.
+- Não fique com **dúvidas e angústias**, vá à paróquia mais próxima e procure um diretor espiritual. 
+
+## Assistência de IA
+- Parte do código e a organização da documentação foram auxiliados pelo Claude (Sonnet 5.5).
+- Todos os blocos gerados por IA foram revisados, testados e adaptados manualmente pelo autor.
 
 ## Contribuindo
 
