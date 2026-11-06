@@ -8,7 +8,7 @@ O projeto também é um **exercício de aprendizado de programação**: o códig
 
 ## Como jogar
 
-- **Online:** [https://github.com/daisonpaz/jogo-heresias/](https://github.com/daisonpaz/jogo-heresias)
+- **Online:** [https://daisonpaz.github.io/jogo-heresias](https://daisonpaz.github.io/jogo-heresias/))
 - **No seu computador ou celular:** baixe este repositório e abra o arquivo `index.html` no navegador. Não é preciso instalar nada.
 
 ## O que o jogo tem hoje
